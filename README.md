@@ -3,6 +3,8 @@
 An interactive web-based PySpark cluster management and notebook environment.  
 Configure your Spark cluster on the fly (with heterogeneous workers!) and write PySpark code in Jupyter notebooks with live cluster connectivity.
 
+![PySpark Playground UI](image.png)
+
 ## ✨ Features
 
 - 🎛️ **Dynamic Cluster Configuration**: 
@@ -124,5 +126,7 @@ pyspark-playground/
 ├── notebooks/              # Saved User Notebooks
 └── docker-compose.yml      # (Auto-generated) Do not edit manually
 ```
+
+![alt text](image.png)
 
 **Happy Sparking! ⚡**
