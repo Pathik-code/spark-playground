@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  spark-master:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.spark-master
+    container_name: spark-master
+    hostname: spark-master
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    networks:
+      - spark-network
+    environment:
+      - SPARK_MODE=master
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
+
+  # Worker nodes will be added dynamically here
+  {{WORKERS}}
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.jupyter
+    container_name: jupyter
+    ports:
+      - "8888:8888"
+    networks:
+      - spark-network
+    volumes:
+      - ./notebooks:/home/jovyan/notebooks
+      - ./data:/home/jovyan/data
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - JUPYTER_ENABLE_LAB=yes
+    depends_on:
+      - spark-master
+
+networks:
+  spark-network:
+    driver: bridge

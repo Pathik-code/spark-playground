@@ -1,0 +1,25 @@
+FROM apache/spark:3.5.0-python3
+
+USER root
+
+# Install additional Python packages
+RUN pip install --no-cache-dir \
+    pandas \
+    numpy \
+    matplotlib \
+    seaborn
+
+# Switch back to spark user
+USER spark
+
+# Set environment variables
+ENV SPARK_MASTER_URL=spark://spark-master:7077
+ENV SPARK_WORKER_MEMORY=1g
+ENV SPARK_WORKER_CORES=1
+ENV SPARK_WORKER_WEBUI_PORT=8081
+
+# Expose worker UI port
+EXPOSE 8081
+
+# Start Spark worker
+CMD ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]

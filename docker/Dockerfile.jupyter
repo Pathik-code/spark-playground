@@ -1,0 +1,37 @@
+FROM jupyter/pyspark-notebook:latest
+
+USER root
+
+# Install additional Python packages
+RUN pip install --no-cache-dir \
+    pandas \
+    numpy \
+    matplotlib \
+    seaborn \
+    plotly \
+    scikit-learn
+
+# Set environment variables for Spark
+ENV SPARK_MASTER=spark://spark-master:7077
+ENV PYSPARK_PYTHON=python3
+ENV PYSPARK_DRIVER_PYTHON=jupyter
+ENV PYSPARK_DRIVER_PYTHON_OPTS='notebook'
+
+# Configure Jupyter
+RUN jupyter notebook --generate-config && \
+    echo "c.NotebookApp.ip = '0.0.0.0'" >> /home/jovyan/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.allow_origin = '*'" >> /home/jovyan/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.token = ''" >> /home/jovyan/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.password = ''" >> /home/jovyan/.jupyter/jupyter_notebook_config.py
+
+# Create directories for notebooks
+RUN mkdir -p /home/jovyan/notebooks/user /home/jovyan/notebooks/templates
+
+USER jovyan
+
+WORKDIR /home/jovyan/notebooks
+
+# Expose Jupyter port
+EXPOSE 8888
+
+CMD ["start-notebook.sh", "--NotebookApp.token=''", "--NotebookApp.password=''"]
