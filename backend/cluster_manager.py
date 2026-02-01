@@ -25,6 +25,7 @@ class ClusterManager:
             
             # Generate worker services
             workers_config = []
+            # print(worker_configs)
             for i, worker_cfg in enumerate(worker_configs, 1):
                 port = 8080 + i
                 worker_service = f"""
@@ -184,13 +185,20 @@ class ClusterManager:
             for i, wcfg in enumerate(worker_configs, 1):
                 print(f"  Worker-{i}: {wcfg.memory} memory, {wcfg.cores} cores")
             
+            # Stop existing cluster using current config BEFORE generating new one
+            if self.is_running:
+                print("Stopping cluster before updating config...")
+                stop_success, stop_msg = self.stop_cluster()
+                if not stop_success:
+                    return False, f"Failed to stop cluster: {stop_msg}"
+
             # Generate new docker-compose
             if not self.generate_docker_compose(cluster_config):
                 return False, "Failed to generate docker-compose configuration"
             
-            # Restart cluster
-            print("Regenerated docker-compose.yml, restarting cluster...")
-            return self.restart_cluster()
+            # Start cluster with new config
+            print("Regenerated docker-compose.yml, starting cluster...")
+            return self.start_cluster()
             
         except Exception as e:
             error_msg = f"Error updating cluster config: {str(e)}"

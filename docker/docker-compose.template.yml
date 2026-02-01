@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.13'
 
 services:
   spark-master:
@@ -9,14 +9,15 @@ services:
     hostname: spark-master
     ports:
       - "7077:7077"
-      - "8080:8080"
+      - "9090:9090"
     networks:
       - spark-network
     environment:
       - SPARK_MODE=master
       - SPARK_MASTER_HOST=spark-master
       - SPARK_MASTER_PORT=7077
-      - SPARK_MASTER_WEBUI_PORT=8080
+      - SPARK_MASTER_WEBUI_PORT=9090
+      - SPARK_PUBLIC_DNS=localhost
 
   # Worker nodes will be added dynamically here
   {{WORKERS}}
